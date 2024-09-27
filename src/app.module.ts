@@ -7,6 +7,7 @@ import { LocationModule } from "./location/location.module";
 import { ServiceModule } from "./service/service.module";
 import { VendorModule } from "./vendor/vendor.module";
 import { CategoryModule } from './category/category.module';
+import { JobModule } from './job/job.module';
 
 @Module({
 	imports: [
@@ -20,6 +21,7 @@ import { CategoryModule } from './category/category.module';
 		LocationModule,
 		ServiceModule,
 		CategoryModule,
+		JobModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
