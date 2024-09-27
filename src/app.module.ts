@@ -6,6 +6,7 @@ import { AppService } from "./app.service";
 import { LocationModule } from "./location/location.module";
 import { ServiceModule } from "./service/service.module";
 import { VendorModule } from "./vendor/vendor.module";
+import { CategoryModule } from './category/category.module';
 
 @Module({
 	imports: [
@@ -18,6 +19,7 @@ import { VendorModule } from "./vendor/vendor.module";
 		VendorModule,
 		LocationModule,
 		ServiceModule,
+		CategoryModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
