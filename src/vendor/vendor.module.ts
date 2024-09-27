@@ -10,3 +10,4 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 	providers: [VendorService],
 })
 export class VendorModule {}
+
