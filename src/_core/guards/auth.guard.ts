@@ -7,7 +7,7 @@ import {
 import { Request } from "express";
 
 @Injectable()
-export class BasicAuthGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
 	private readonly validUsername = process.env.BASIC_AUTH_USERNAME;
 	private readonly validPassword = process.env.BASIC_AUTH_PASSWORD; // Pode ser hash se necessário
 
