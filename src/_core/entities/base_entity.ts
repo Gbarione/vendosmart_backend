@@ -1,12 +1,10 @@
-import { nanoid } from "nanoid/async";
+import type { DeepPartial } from "typeorm";
 import {
-	BeforeInsert,
 	Column,
 	CreateDateColumn,
 	PrimaryColumn,
 	UpdateDateColumn,
 } from "typeorm";
-import type { DeepPartial } from "typeorm";
 
 export const ID_LENGTH = Number(process.env.ID_LENGTH);
 
@@ -15,8 +13,8 @@ export class BaseEntity<T> {
 		Object.assign(this, partialObject);
 	}
 
-	@PrimaryColumn({ type: "varchar", length: ID_LENGTH })
-	id: string;
+	@PrimaryColumn({ type: "int", generated: "increment" })
+	id: number;
 
 	@Column()
 	@CreateDateColumn()
@@ -25,12 +23,5 @@ export class BaseEntity<T> {
 	@Column()
 	@UpdateDateColumn()
 	updatedDate?: Date;
-
-	@BeforeInsert()
-	async generateId() {
-		if (!this.id) {
-			this.id = await nanoid(ID_LENGTH);
-		}
-	}
 }
 
