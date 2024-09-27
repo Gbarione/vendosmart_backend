@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { AppDataSource } from "typeorm.config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { VendorModule } from "./vendor/vendor.module";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { DataSource } from "typeorm";
 import { LocationModule } from "./location/location.module";
-import { AppDataSource } from "typeorm.config";
+import { ServiceModule } from "./service/service.module";
+import { VendorModule } from "./vendor/vendor.module";
 
 @Module({
 	imports: [
@@ -17,6 +17,7 @@ import { AppDataSource } from "typeorm.config";
 		}),
 		VendorModule,
 		LocationModule,
+		ServiceModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
