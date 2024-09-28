@@ -1,15 +1,11 @@
 import { Module } from "@nestjs/common";
 import { LocationService } from "./location.service";
 import { LocationController } from "./location.controller";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { Location } from "./location.entity";
-import { LocationRepository } from "./location.repository";
+import { StorageService } from "../_core/localStorage";
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Location])],
 	controllers: [LocationController],
-	providers: [LocationService, LocationRepository],
-	exports: [LocationRepository],
+	providers: [LocationService, StorageService],
+	exports: [LocationService],
 })
 export class LocationModule {}
-

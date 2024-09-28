@@ -1,22 +1,14 @@
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { AppDataSource } from "typeorm.config";
+import { StorageService } from "./_core/localStorage";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { CategoryModule } from "./category/category.module";
+import { JobModule } from "./job/job.module";
 import { LocationModule } from "./location/location.module";
 import { ServiceModule } from "./service/service.module";
 import { VendorModule } from "./vendor/vendor.module";
-import { CategoryModule } from './category/category.module';
-import { JobModule } from './job/job.module';
-
 @Module({
 	imports: [
-		TypeOrmModule.forRootAsync({
-			useFactory: async () => {
-				await AppDataSource.initialize();
-				return AppDataSource.options;
-			},
-		}),
 		VendorModule,
 		LocationModule,
 		ServiceModule,
@@ -24,7 +16,13 @@ import { JobModule } from './job/job.module';
 		JobModule,
 	],
 	controllers: [AppController],
-	providers: [AppService],
+	providers: [
+		AppService,
+		{
+			provide: StorageService,
+			useFactory: () => StorageService.getInstance(),
+		},
+	],
 })
 export class AppModule {}
 
