@@ -3,9 +3,9 @@ import { Category } from "../category/category.entity";
 
 export class Service {
 	id: number;
-	vendorId: number;
-	categoryId: number;
 	compliant: boolean;
-	vendor?: Vendor;
-	category?: Category;
+	vendor: Vendor;
+	vendorId?: number;
+	category: Category;
 }
+

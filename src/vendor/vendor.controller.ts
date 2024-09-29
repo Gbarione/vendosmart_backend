@@ -8,9 +8,12 @@ import {
 	Query,
 	UseGuards,
 } from "@nestjs/common";
-import { VendorService } from "./vendor.service";
-import { CreateVendorDto } from "./dto/createVendor.dto";
 import { AuthGuard } from "src/_core/guards/auth.guard";
+import { CreateVendorDto } from "./dto/create_vendor.dto";
+import { CreateVendorResponseDto } from "./dto/create_vendor_response.dto";
+import { GetPotentialVendorsResponseDto } from "./dto/get_potential_vendors_response.dto";
+import { GetReachableVendorsResponseDto } from "./dto/get_reachable_vendors_response.dto";
+import { VendorService } from "./vendor.service";
 
 @Controller("vendor")
 export class VendorController {
@@ -18,27 +21,29 @@ export class VendorController {
 
 	@Post()
 	@UseGuards(AuthGuard)
-	async createVendor(@Body() createVendorDto: CreateVendorDto) {
+	createVendor(
+		@Body() createVendorDto: CreateVendorDto,
+	): CreateVendorResponseDto {
 		return this.vendorService.create(createVendorDto);
 	}
 
 	@Get("potential")
 	@UseGuards(AuthGuard)
-	async getPotentialVendors(@Query("jobId", ParseIntPipe) jobId: number) {
+	getPotentialVendors(
+		@Query("jobId", ParseIntPipe) jobId: number,
+	): GetPotentialVendorsResponseDto[] {
+		if (!jobId) {
+			throw new BadRequestException("jobId is required.");
+		}
+
 		return this.vendorService.getPotentialVendors(jobId);
 	}
 
 	@Get("reachable")
-	async getReachableVendors(
+	getReachableVendors(
 		@Query("locationId", ParseIntPipe) locationId: number,
 		@Query("categoryId", ParseIntPipe) categoryId: number,
-	) {
-		if (!locationId || !categoryId) {
-			throw new BadRequestException(
-				"locationId and categoryId are required.",
-			);
-		}
-
+	): GetReachableVendorsResponseDto {
 		return this.vendorService.getReachableVendors(locationId, categoryId);
 	}
 }

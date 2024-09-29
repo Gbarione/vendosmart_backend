@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { CreateJobDto } from "./dto/createJob.dto";
-import { StorageService } from "../_core/localStorage";
+import { CreateJobDto } from "./dto/create_job.dto";
+import { StorageService } from "../_core/local_storage";
+import { JobResponseDto } from "./dto/job_response.dto";
+import { Job } from "./job.entity";
 
 @Injectable()
 export class JobService {
@@ -8,12 +10,11 @@ export class JobService {
 		this.storageService = StorageService.getInstance();
 	}
 
-	async create(createJobDto: CreateJobDto) {
+	create(createJobDto: CreateJobDto): JobResponseDto {
 		const category = this.storageService.findById(
 			"category",
 			createJobDto.categoryId,
 		);
-
 		const location = this.storageService.findById(
 			"location",
 			createJobDto.locationId,
@@ -23,7 +24,13 @@ export class JobService {
 			throw new NotFoundException("Category or location not found");
 		}
 
-		return this.storageService.create("job", createJobDto);
+		const job: Job = this.storageService.create("job", createJobDto);
+
+		return {
+			id: job.id,
+			category,
+			location,
+		};
 	}
 }
 

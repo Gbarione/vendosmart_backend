@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { VendorController } from "./vendor.controller";
 import { VendorService } from "./vendor.service";
-import { StorageService } from "src/_core/localStorage";
+import { StorageService } from "src/_core/local_storage";
 import { ServiceModule } from "../service/service.module";
 import { ServiceService } from "src/service/service.service";
 

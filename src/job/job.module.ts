@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { JobService } from "./job.service";
 import { JobController } from "./job.controller";
-import { StorageService } from "../_core/localStorage";
+import { StorageService } from "../_core/local_storage";
 
 @Module({
 	controllers: [JobController],

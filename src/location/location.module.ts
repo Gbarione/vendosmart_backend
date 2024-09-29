@@ -1,11 +1,10 @@
 import { Module } from "@nestjs/common";
-import { LocationService } from "./location.service";
-import { LocationController } from "./location.controller";
-import { StorageService } from "../_core/localStorage";
+import { StorageService } from "../_core/local_storage";
 
 @Module({
-	controllers: [LocationController],
-	providers: [LocationService, StorageService],
-	exports: [LocationService],
+	controllers: [],
+	providers: [StorageService],
+	exports: [],
 })
 export class LocationModule {}
+

@@ -1,8 +1,18 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { StorageService } from "../_core/localStorage";
+import { StorageService } from "../_core/local_storage";
 import { ServiceService } from "../service/service.service";
-import { CreateVendorDto } from "./dto/createVendor.dto";
+import { CreateVendorDto } from "./dto/create_vendor.dto";
 import { Vendor } from "./vendor.entity";
+import {
+	CreateVendorResponseDto,
+	ServiceDto,
+} from "./dto/create_vendor_response.dto";
+import { Service } from "src/service/service.entity";
+import { GetPotentialVendorsResponseDto } from "./dto/get_potential_vendors_response.dto";
+import { GetReachableVendorsResponseDto } from "./dto/get_reachable_vendors_response.dto";
+import { Category } from "src/category/category.entity";
+import { Location } from "src/location/location.entity";
+import { CreateServiceDto } from "src/service/dto/create_service.dto";
 
 @Injectable()
 export class VendorService {
@@ -13,7 +23,7 @@ export class VendorService {
 		this.storageService = StorageService.getInstance();
 	}
 
-	async create(createVendorDto: CreateVendorDto): Promise<Vendor> {
+	create(createVendorDto: CreateVendorDto): CreateVendorResponseDto {
 		const { services, locationId, name } = createVendorDto;
 
 		const location = this.storageService.findById("location", locationId);
@@ -26,19 +36,29 @@ export class VendorService {
 			name,
 		});
 
-		const createdServices = services.map((service) => {
-			return this.serviceService.create(newVendor.id, service);
+		const createdServices = services.map((service: CreateServiceDto) => {
+			const createdService = this.serviceService.create(
+				newVendor.id,
+				service,
+			);
+			return {
+				id: createdService.id,
+				compliant: createdService.compliant,
+				category: createdService.category,
+			};
 		});
 
 		this.storageService.update("vendor", newVendor.id, newVendor);
 
 		return {
-			...newVendor,
+			id: newVendor.id,
+			name: newVendor.name,
+			location: location,
 			services: createdServices,
 		};
 	}
 
-	async getPotentialVendors(jobId: number): Promise<Vendor[]> {
+	getPotentialVendors(jobId: number): GetPotentialVendorsResponseDto[] {
 		const job = this.storageService.findById("job", jobId);
 
 		if (!job) {
@@ -56,6 +76,10 @@ export class VendorService {
 			(category) => category.id === categoryId,
 		);
 
+		if (!foundCategory) {
+			throw new NotFoundException("Category not found");
+		}
+
 		const sortedVendors = potentialVendors.sort((a: any, b: any) => {
 			const aCompliant = a.services.find(
 				(service: any) => service.category.id === foundCategory.id,
@@ -67,31 +91,53 @@ export class VendorService {
 			return aCompliant === bCompliant ? 0 : aCompliant ? -1 : 1;
 		});
 
-		return sortedVendors;
+		return sortedVendors.map((vendor) => {
+			return {
+				id: vendor.id,
+				name: vendor.name,
+				location: vendor.location!,
+				services: vendor.services.map((service) => {
+					return {
+						id: service.id,
+						compliant: service.compliant,
+						category: service.category,
+					};
+				}),
+			};
+		});
 	}
 
-	async getReachableVendors(locationId: number, categoryId: number) {
+	getReachableVendors(
+		locationId: number,
+		categoryId: number,
+	): GetReachableVendorsResponseDto {
 		const potentialVendors = this._getPotentialVendors(
 			categoryId,
 			locationId,
 		);
 
+		if (!potentialVendors.length) {
+			throw new NotFoundException("No potential vendors found");
+		}
+
 		return {
 			total: potentialVendors.length,
-			compliant: potentialVendors.filter((vendor) =>
-				vendor.services.some((service) => service.compliant),
+			compliant: potentialVendors.filter((vendor: Vendor) =>
+				vendor.services.some((service: Service) => service.compliant),
 			).length,
-			notCompliant: potentialVendors.filter((vendor) =>
-				vendor.services.some((service) => !service.compliant),
+			notCompliant: potentialVendors.filter((vendor: Vendor) =>
+				vendor.services.some((service: Service) => !service.compliant),
 			).length,
 		};
 	}
 
 	private _getPotentialVendors(categoryId: number, locationId: number) {
-		const allVendors = this.storageService.findAll("vendor");
-		const allServices = this.storageService.findAll("service");
-		const allLocations = this.storageService.findAll("location");
-		const allCategories = this.storageService.findAll("category");
+		const allVendors: Vendor[] = this.storageService.findAll("vendor");
+		const allServices: Service[] = this.storageService.findAll("service");
+		const allLocations: Location[] =
+			this.storageService.findAll("location");
+		const allCategories: Category[] =
+			this.storageService.findAll("category");
 
 		if (
 			!allVendors.length ||
@@ -102,40 +148,63 @@ export class VendorService {
 			throw new NotFoundException("Data not found");
 		}
 
-		const foundLocation = allLocations.find(
-			(location) => location.id === locationId,
-		);
-		const foundCategory = allCategories.find(
-			(category) => category.id === categoryId,
+		const foundLocation: Location | undefined = allLocations.find(
+			(location: Location) => location.id === locationId,
 		);
 
-		const servicesWithCategories = allServices.map((service) => {
-			const category = allCategories.find(
-				(category) => category.id === service.categoryId,
+		if (!foundLocation) {
+			throw new NotFoundException("Location not found");
+		}
+
+		const foundCategory: Category | undefined = allCategories.find(
+			(category: Category) => category.id === categoryId,
+		);
+
+		if (!foundCategory) {
+			throw new NotFoundException("Category not found");
+		}
+
+		const servicesWithCategories: Service[] = allServices.map((service) => {
+			const category: Category | undefined = allCategories.find(
+				(category: Category) => category.id === service.category.id,
 			);
+
+			if (!category) {
+				throw new NotFoundException("Category not found");
+			}
+
 			return { ...service, category };
 		});
 
-		const vendorsWithServicesAndLocation = allVendors.map((vendor) => {
-			const services = servicesWithCategories.filter(
-				(service) => service.vendorId === vendor.id,
-			);
-			const location = allLocations.find(
-				(location) => location.id === vendor.locationId,
-			);
-			return { ...vendor, services, location };
-		});
+		const vendorsWithServicesAndLocation: Vendor[] = allVendors.map(
+			(vendor) => {
+				const services: Service[] = servicesWithCategories.filter(
+					(service: Service) => service.vendorId === vendor.id,
+				);
 
-		const vendorsInSameLocationAsJob =
-			vendorsWithServicesAndLocation.filter(
-				(vendor) => vendor.location.id === foundLocation.id,
-			);
+				const location: Location | undefined = allLocations.find(
+					(location: Location) => location.id === vendor.locationId,
+				);
+
+				if (!location) {
+					throw new NotFoundException("Location not found");
+				}
+
+				return { ...vendor, services, location };
+			},
+		);
+
+		const vendorsInSameLocationAsJob: Vendor[] =
+			vendorsWithServicesAndLocation.filter((vendor: Vendor) => {
+				return vendor.location!.id === foundLocation?.id;
+			});
 
 		return vendorsInSameLocationAsJob.filter(
-			(vendor) =>
+			(vendor: Vendor) =>
 				vendor.services.length &&
 				vendor.services.some(
-					(service) => service.category.id === foundCategory.id,
+					(service: Service) =>
+						service.category?.id === foundCategory?.id,
 				),
 		);
 	}

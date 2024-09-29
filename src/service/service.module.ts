@@ -1,10 +1,9 @@
 import { Module } from "@nestjs/common";
+import { StorageService } from "../_core/local_storage";
 import { ServiceService } from "./service.service";
-import { ServiceController } from "./service.controller";
-import { StorageService } from "../_core/localStorage";
 
 @Module({
-	controllers: [ServiceController],
+	controllers: [],
 	providers: [ServiceService, StorageService],
 	exports: [ServiceService],
 })

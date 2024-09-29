@@ -1,7 +1,5 @@
 import { Module } from "@nestjs/common";
-import { StorageService } from "./_core/localStorage";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
+import { StorageService } from "./_core/local_storage";
 import { CategoryModule } from "./category/category.module";
 import { JobModule } from "./job/job.module";
 import { LocationModule } from "./location/location.module";
@@ -15,9 +13,8 @@ import { VendorModule } from "./vendor/vendor.module";
 		CategoryModule,
 		JobModule,
 	],
-	controllers: [AppController],
+	controllers: [],
 	providers: [
-		AppService,
 		{
 			provide: StorageService,
 			useFactory: () => StorageService.getInstance(),

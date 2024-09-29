@@ -3,8 +3,7 @@ import { Location } from "../location/location.entity";
 
 export class Job {
 	id: number;
-	categoryId: number;
-	locationId: number;
-	category?: Category;
-	location?: Location;
+	category: Category;
+	location: Location;
 }
+

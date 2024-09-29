@@ -7,7 +7,7 @@ import {
 	IsString,
 	ValidateNested,
 } from "class-validator";
-import { CreateServiceDto } from "src/service/dto/createService.dto";
+import { CreateServiceDto } from "src/service/dto/create_service.dto";
 
 export class CreateVendorDto {
 	@IsString()
@@ -24,3 +24,4 @@ export class CreateVendorDto {
 	@Type(() => CreateServiceDto)
 	services: CreateServiceDto[];
 }
+
