@@ -123,7 +123,7 @@ The `automate-job-request.sh` script create jobs and vendors.
 
 2. **API Documentation**:
 
-    - Add Swagger or Postman documentation to the API.
+    - Add Swagger documentation to the API.
 
 3. **Endpoints**:
 
@@ -137,4 +137,3 @@ The `automate-job-request.sh` script create jobs and vendors.
     - Improve error handling.
     - Add a better authentication method.
     - Add Health Checks
-
