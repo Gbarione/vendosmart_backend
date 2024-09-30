@@ -1,3 +1,5 @@
+#!/bin/bash
+
 API_URL="http://localhost:8090"
 JOB_ENDPOINT="/job"
 VENDOR_ENDPOINT="/vendor"

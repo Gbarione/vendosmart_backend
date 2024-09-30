@@ -112,7 +112,7 @@ The `automate-job-request.sh` script create jobs and vendors.
 
 1. Ensure `curl` is installed
 2. Run the script:
-    - On Unix-like systems: `./automate-job-request.sh`
+    - On Unix-like systems: `chmod +x ./automate-job-request.sh && ./automate-job-request.sh`
     - On Windows (Git Bash): `sh automate-job-request.sh`
 
 ## Potential Improvements
