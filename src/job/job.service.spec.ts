@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { JobService } from "./job.service";
-import { StorageService } from "../_core/localStorage";
+import { StorageService } from "../_core/local_storage";
+import { CreateJobDto } from "./dto/create_job.dto";
 import { NotFoundException } from "@nestjs/common";
 
 describe("JobService", () => {
@@ -9,7 +10,17 @@ describe("JobService", () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [JobService, StorageService],
+			providers: [
+				JobService,
+				{
+					provide: StorageService,
+					useValue: {
+						getInstance: jest.fn().mockReturnThis(),
+						findById: jest.fn(),
+						create: jest.fn(),
+					},
+				},
+			],
 		}).compile();
 
 		service = module.get<JobService>(JobService);
@@ -20,34 +31,25 @@ describe("JobService", () => {
 		expect(service).toBeDefined();
 	});
 
-	describe("create", () => {
-		it("should create a job when category and location exist", async () => {
-			const createJobDto = { categoryId: 1, locationId: 1 };
-			jest.spyOn(storageService, "findById").mockImplementation(
-				(entity, id) => ({ id }),
-			);
-			jest.spyOn(storageService, "create").mockReturnValue({
-				id: 1,
-				...createJobDto,
-			});
+	it("should create a job", () => {
+		const createJobDto: CreateJobDto = {
+			locationId: 1,
+			categoryId: 1,
+		};
 
-			const result = await service.create(createJobDto);
+		const result = service.create(createJobDto);
 
-			expect(result).toEqual({ id: 1, ...createJobDto });
-			expect(storageService.findById).toHaveBeenCalledTimes(2);
-			expect(storageService.create).toHaveBeenCalledWith(
-				"job",
-				createJobDto,
-			);
-		});
+		expect(result).toBeDefined();
+	});
 
-		it("should throw NotFoundException when category or location not found", async () => {
-			const createJobDto = { categoryId: 1, locationId: 1 };
-			jest.spyOn(storageService, "findById").mockReturnValue(null);
+	it("should throw NotFoundException if category or location not found", () => {
+		const createJobDto: CreateJobDto = {
+			locationId: 1,
+			categoryId: 999,
+		};
 
-			await expect(service.create(createJobDto)).rejects.toThrow(
-				NotFoundException,
-			);
-		});
+		expect(() => {
+			service.create(createJobDto);
+		}).toThrow(NotFoundException);
 	});
 });

@@ -1,85 +1,140 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <a href="https://vendorsmart.com/" target="blank"><img src="https://vendorsmart.com/vs/assets/media/svg/logos/vendor-smart.svg" width="360" alt="Vendor Smart Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# Description
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This project is a simple API that allows you to manage vendors and jobs. It is built with NestJS and uses a local storage for the data.
 
-## Description
+## Table of Contents
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. [Project Setup](#project-setup)
+    - [With Docker](#project-setup-with-docker)
+    - [Without Docker](#running-without-docker)
+2. [API Endpoints](#api-endpoints)
+3. [Authentication](#authentication)
+4. [Project Structure](#project-structure)
+5. [Postman Collection](#postman-collection)
+6. [Running Tests](#running-the-tests)
+7. [Automated Job Request Script](#automated-job-request-script)
+8. [Potential Improvements](#potential-improvements)
 
-## Project setup
+## Project Setup
+
+### Project Setup with Docker
+
+1. Make sure you have Docker and Docker Compose installed on your machine.
+
+2. Clone the repository:
+
+    ```bash
+    git clone <repository-url>
+    cd <project-folder>
+    ```
+
+3. Build and run the Docker container:
+
+    ```bash
+    docker-compose up --build
+    ```
+
+4. The application will be available at `http://localhost:8090`.
+
+### Running without Docker
+
+If you prefer to run the project without Docker, follow these steps:
+
+1. Install dependencies:
+
+    ```bash
+    yarn install
+    ```
+
+2. Set up environment variables:
+   Create a `.env` file in the root of the project and add the following:
+
+    ```
+    PORT=8090
+    BASIC_AUTH_USERNAME=vs_tech_challenge
+    BASIC_AUTH_PASSWORD=SuperSecurePassword123@
+    ```
+
+3. Run the project:
+
+    ```bash
+    # development
+    $ yarn run start
+
+    # watch mode
+    $ yarn run start:dev
+
+    # production mode
+    $ yarn run start:prod
+    ```
+
+## API Endpoints
+
+-   `POST /job`: Create a new job (requires authentication)
+-   `POST /vendor`: Create a new vendor (requires authentication)
+-   `GET /vendor/potential`: Get potential vendors for a job (requires authentication)
+-   `GET /vendor/reachable`: Get reachable vendors based on location and category (does not require authentication)
+
+## Authentication
+
+The API uses Basic Authentication. Make sure to include the appropriate headers in your requests.
+
+## Project Structure
+
+-   `src/`: Source code
+    -   `_core/`: Core functionality (guards, interceptors, pipes)
+    -   `category/`: Category module
+    -   `job/`: Job module
+    -   `location/`: Location module
+    -   `service/`: Service module
+    -   `vendor/`: Vendor module
+-   `test/`: Test files
+
+## Postman Collection
+
+You can find the Postman collection in the `vendorsmart.postman_collection.json` file.
+
+## Running the tests
 
 ```bash
-$ yarn install
+yarn test:cov
 ```
 
-## Compile and run the project
+## Automated Job Request Script
 
-```bash
-# development
-$ yarn run start
+The `automate-job-request.sh` script create jobs and vendors.
 
-# watch mode
-$ yarn run start:dev
+### Usage:
 
-# production mode
-$ yarn run start:prod
-```
+1. Ensure `curl` is installed
+2. Run the script:
+    - On Unix-like systems: `./automate-job-request.sh`
+    - On Windows (Git Bash): `sh automate-job-request.sh`
 
-## Run tests
+## Potential Improvements
 
-```bash
-# unit tests
-$ yarn run test
+1. **Database**:
 
-# e2e tests
-$ yarn run test:e2e
+    - Add a database to store the data and ORM to help manage the data.
 
-# test coverage
-$ yarn run test:cov
-```
+2. **API Documentation**:
 
-## Resources
+    - Add Swagger or Postman documentation to the API.
 
-Check out a few resources that may come in handy when working with NestJS:
+3. **Endpoints**:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+    - Add more endpoints to the API.
+    - Add a endpoint to manage(get, update, delete) vendors, jobs, categories and
+      locations.
 
-## Support
+4. **Code**:
+    - Improve code quality and add more tests.
+    - Add pagination to potential vendors endpoint.
+    - Improve error handling.
+    - Add a better authentication method.
+    - Add Health Checks
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

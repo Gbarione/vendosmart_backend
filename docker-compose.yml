@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8090:8090"
+    environment:
+      - PORT=8090
+      - BASIC_AUTH_USERNAME=vs_tech_challenge
+      - BASIC_AUTH_PASSWORD=SuperSecurePassword123@
