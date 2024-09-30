@@ -22,6 +22,7 @@ export class ServiceService {
 			category: foundCategory,
 			vendorId,
 		});
+
 		return newService;
 	}
 }
