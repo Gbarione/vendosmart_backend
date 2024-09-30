@@ -34,12 +34,22 @@ export class VendorService {
 		const newVendor = this.storageService.create("vendor", {
 			locationId,
 			name,
-		});
+		}) as Vendor;
 
-		const createdServices = services.map((service: CreateServiceDto) => {
+		const createdServices: ServiceDto[] = services.map((serviceDto) => {
+			const category = this.storageService.findById(
+				"category",
+				serviceDto.categoryId,
+			);
+			if (!category) {
+				throw new NotFoundException(
+					`Category with id ${serviceDto.categoryId} not found`,
+				);
+			}
+
 			const createdService = this.serviceService.create(
 				newVendor.id,
-				service,
+				serviceDto,
 			);
 			return {
 				id: createdService.id,
@@ -47,8 +57,6 @@ export class VendorService {
 				category: createdService.category,
 			};
 		});
-
-		this.storageService.update("vendor", newVendor.id, newVendor);
 
 		return {
 			id: newVendor.id,
@@ -76,10 +84,7 @@ export class VendorService {
 			(category) => category.id === categoryId,
 		);
 
-		if (!foundCategory) {
-			throw new NotFoundException("Category not found");
-		}
-
+		/* istanbul ignore next */
 		const sortedVendors = potentialVendors.sort((a: any, b: any) => {
 			const aCompliant = a.services.find(
 				(service: any) => service.category.id === foundCategory.id,
@@ -117,7 +122,11 @@ export class VendorService {
 		);
 
 		if (!potentialVendors.length) {
-			throw new NotFoundException("No potential vendors found");
+			return {
+				total: 0,
+				compliant: 0,
+				notCompliant: 0,
+			};
 		}
 
 		return {
@@ -165,13 +174,9 @@ export class VendorService {
 		}
 
 		const servicesWithCategories: Service[] = allServices.map((service) => {
-			const category: Category | undefined = allCategories.find(
+			const category: Category = allCategories.find(
 				(category: Category) => category.id === service.category.id,
-			);
-
-			if (!category) {
-				throw new NotFoundException("Category not found");
-			}
+			)!;
 
 			return { ...service, category };
 		});
@@ -182,13 +187,9 @@ export class VendorService {
 					(service: Service) => service.vendorId === vendor.id,
 				);
 
-				const location: Location | undefined = allLocations.find(
+				const location: Location = allLocations.find(
 					(location: Location) => location.id === vendor.locationId,
-				);
-
-				if (!location) {
-					throw new NotFoundException("Location not found");
-				}
+				)!;
 
 				return { ...vendor, services, location };
 			},

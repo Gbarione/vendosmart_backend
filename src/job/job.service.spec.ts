@@ -31,7 +31,7 @@ describe("JobService", () => {
 		expect(service).toBeDefined();
 	});
 
-	it("should create a service", () => {
+	it("should create a job", () => {
 		const createJobDto: CreateJobDto = {
 			locationId: 1,
 			categoryId: 1,
@@ -53,4 +53,3 @@ describe("JobService", () => {
 		}).toThrow(NotFoundException);
 	});
 });
-
